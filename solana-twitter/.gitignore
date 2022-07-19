@@ -1,0 +1,12 @@
+node_modules
+
+app/node_modules
+
+anchor/solana-twitter/target/
+anchor/solana-twitter/Cargo.lock
+
+program/target/
+program/Cargo.lock
+
+package-lock.json
+yarn.lock
