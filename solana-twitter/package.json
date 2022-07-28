@@ -1,7 +1,11 @@
 {
-  "devDependencies": {
-    "@types/chai": "^4.3.1",
+  "dependencies": {
+    "@project-serum/anchor": "^0.25.0",
+    "@types/bn.js": "^5.1.0",
     "@types/mocha": "^9.1.1",
-    "ts-mocha": "^10.0.0"
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "ts-mocha": "^10.0.0",
+    "typescript": "^4.7.4"
   }
 }
