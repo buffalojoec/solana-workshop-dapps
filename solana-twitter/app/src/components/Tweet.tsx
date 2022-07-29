@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { TweetProps } from "../types/types";
+import { TweetObject } from "../models/types";
 
 
-export const Tweet: FC<TweetProps> = (props: TweetProps) => {
+export const Tweet: FC<TweetObject> = (props: TweetObject) => {
     return(
         <div>
             <p>{props.publicKey.toString()}</p>

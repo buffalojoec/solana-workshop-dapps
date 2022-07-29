@@ -1,7 +1,7 @@
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 import * as anchor from "@project-serum/anchor";
 import * as constants from './const';
-import { ProfileProps, TweetProps } from '../types/types';
+import { ProfileObject, TweetObject } from '../models/types';
 
 
 function getAnchorConfigs(wallet: AnchorWallet): [anchor.AnchorProvider, anchor.Program] | [null, null] {
@@ -69,7 +69,7 @@ export async function modifyProfileTransaction(
     return [tx, provider];
 };
 
-export async function getProfile(wallet: AnchorWallet): Promise<ProfileProps> {
+export async function getProfile(wallet: AnchorWallet): Promise<ProfileObject> {
     const [provider, program] = getAnchorConfigs(wallet);
     if (!provider) throw("Provider is null");
     const profilePda = (await getPda(provider, program, [constants.PROFILE_SEED]))[0];
@@ -114,11 +114,11 @@ export async function createTweetTransaction(
     return [tx, provider];
 };
 
-export async function getAllTweets(wallet: AnchorWallet): Promise<TweetProps[]> {
+export async function getAllTweets(wallet: AnchorWallet): Promise<TweetObject[]> {
     const [provider, program] = getAnchorConfigs(wallet);
     if (!provider) throw("Provider is null");
     if (!program) throw("Program is null");
-    let allTweets: TweetProps[] = [];
+    let allTweets: TweetObject[] = [];
     const tweets = await program.account.solanaTweet.all();
     for (var tw of tweets) {
         const twitterAccount = await program.account.solanaTwitterAccountInfo.fetch(tw.account.twitterAccountPubkey as anchor.web3.PublicKey);

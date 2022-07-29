@@ -1,10 +1,10 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { RequestAirdrop } from '../components/RequestAirdrop';
+import useTweetsStore from "../stores/TweetStore";
+import { ProfileObject, TweetObject } from '../models/types';
 import { WriteTweet } from './WriteTweet';
 import { Tweet } from "./Tweet";
-import { ProfileProps, TweetProps } from '../types/types';
 import * as util from '../utils/util';
 
 
@@ -19,7 +19,7 @@ export const SolanaTwitter: FC = () => {
     const [tweetCount, setTweetCount] = useState<number>(0);
     const [profileInit, setProfileInit] = useState<boolean>(false);
 
-    const [allTweets, setAllTweets] = useState<TweetProps[]>([]);
+    const { tweets, getAllTweets } = useTweetsStore();
 
     async function createSolanaTwitterAccount() {
         if (!wallet) throw("Wallet not connected!")
@@ -37,7 +37,7 @@ export const SolanaTwitter: FC = () => {
         const getProfileInfo = async () => {
             try {
                 if (!wallet) throw("Wallet not connected!");
-                const profileInfo: ProfileProps = await util.getProfile(wallet);
+                const profileInfo: ProfileObject = await util.getProfile(wallet);
                 setTwitterAccountPubkey(profileInfo.publicKey.toString());
                 setName(profileInfo.displayName);
                 setHandle(profileInfo.handle);
@@ -47,17 +47,8 @@ export const SolanaTwitter: FC = () => {
                 console.log(e);
             };
         };
-        const getAllTweets = async () => {
-            try {
-                if (!wallet) throw("Wallet not connected!");
-                const tweets: TweetProps[] = await util.getAllTweets(wallet);
-                setAllTweets(tweets);
-            } catch (e) {
-                console.log(e);
-            };
-        };
         getProfileInfo();
-        getAllTweets();
+        getAllTweets(wallet);
     }, [wallet]);
 
     const welcomeHeader = () => {
@@ -75,9 +66,8 @@ export const SolanaTwitter: FC = () => {
             <div>
                 { profileInit ?
                     <div>
-                        <RequestAirdrop/>
-                        <WriteTweet publicKey={wallet.publicKey} twitterAccountPublicKey={twitterAccountPubkey} name={name} handle={handle} tweetCount={tweetCount}/>
-                        {allTweets.map((tweet, i) => {
+                        <WriteTweet getAllTweets={getAllTweets} publicKey={wallet.publicKey} twitterAccountPublicKey={twitterAccountPubkey} name={name} handle={handle} tweetCount={tweetCount}/>
+                        {tweets.map((tweet, i) => {
                             return <Tweet key={i} publicKey={tweet.publicKey} twitterAccountPublicKey={twitterAccountPubkey} name={tweet.name} handle={tweet.handle} message={tweet.message}/>
                         })}
                     </div>

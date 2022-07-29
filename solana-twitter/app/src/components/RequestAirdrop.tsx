@@ -1,26 +1,34 @@
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { LAMPORTS_PER_SOL, TransactionSignature } from '@solana/web3.js';
 import { FC, useCallback } from 'react';
-import { useAnchorWallet } from '@solana/wallet-adapter-react';
-import * as anchor from "@project-serum/anchor";
-import * as constants from "../utils/const";
-
+import { notify } from "../utils/notifications";
+import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
 
 export const RequestAirdrop: FC = () => {
-    const wallet = useAnchorWallet();
+    const { connection } = useConnection();
+    const { publicKey } = useWallet();
+    const { getUserSOLBalance } = useUserSOLBalanceStore();
 
     const onClick = useCallback(async () => {
-        if (!wallet) {
+        if (!publicKey) {
             console.log('error', 'Wallet not connected!');
+            notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
             return;
         }
-        const connection = new anchor.web3.Connection(constants.NETWORK, constants.PREFLIGHT_COMMITMENT);
+
+        let signature: TransactionSignature = '';
+
         try {
-            await connection.confirmTransaction(
-                await connection.requestAirdrop(wallet.publicKey, anchor.web3.LAMPORTS_PER_SOL), 'confirmed'
-            );
+            signature = await connection.requestAirdrop(publicKey, LAMPORTS_PER_SOL);
+            await connection.confirmTransaction(signature, 'confirmed');
+            notify({ type: 'success', message: 'Airdrop successful!', txid: signature });
+
+            getUserSOLBalance(publicKey, connection);
         } catch (error: any) {
-            console.log('error', `Airdrop failed! ${error?.message}`);
+            notify({ type: 'error', message: `Airdrop failed!`, description: error?.message, txid: signature });
+            console.log('error', `Airdrop failed! ${error?.message}`, signature);
         }
-    }, [wallet]);
+    }, [publicKey, connection, getUserSOLBalance]);
 
     return (
         <div>

@@ -1,8 +1,18 @@
 import { FC, useCallback, useState } from "react";
-import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
-import { TweetProps, WriteTweetProps } from "../types/types";
+import { AnchorWallet, useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
+import { TweetObject } from "../models/types";
+import * as anchor from "@project-serum/anchor";
 import * as util from '../utils/util';
 
+
+interface WriteTweetProps {
+    getAllTweets: (wallet: AnchorWallet | undefined) => void,
+    publicKey: anchor.web3.PublicKey,
+    twitterAccountPublicKey: anchor.web3.PublicKey,
+    name: string,
+    handle: string,
+    tweetCount: number,
+};
 
 export const WriteTweet: FC<WriteTweetProps> = (props: WriteTweetProps) => {
 
@@ -22,9 +32,10 @@ export const WriteTweet: FC<WriteTweetProps> = (props: WriteTweetProps) => {
         await provider.connection.confirmTransaction(sx);
     };
 
-    const onClickPublishTweet = useCallback(async (form: TweetProps) => {
+    const onClickPublishTweet = useCallback(async (form: TweetObject) => {
         await publishTweet(form.message);
-    }, [wallet, name, handle, tweetCount]);
+        props.getAllTweets(wallet);
+    }, [wallet, props]);
 
     return(
         <div>

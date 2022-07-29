@@ -1,5 +1,3 @@
-import * as anchor from "@project-serum/anchor";
-
 
 export const PROFILE_SEED = "_profile";
 export const TWEET_SEED = "_tweet_"

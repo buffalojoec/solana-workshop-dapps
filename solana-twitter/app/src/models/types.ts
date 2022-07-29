@@ -1,6 +1,9 @@
 import * as anchor from "@project-serum/anchor";
 
-export interface ProfileProps {
+
+export type EndpointTypes = 'mainnet' | 'devnet' | 'localnet'
+
+export interface ProfileObject {
     publicKey: anchor.web3.PublicKey,
     twitterAccountPublicKey: anchor.web3.PublicKey,
     displayName: string,
@@ -8,7 +11,7 @@ export interface ProfileProps {
     tweetCount: number,
 };
 
-export interface TweetProps {
+export interface TweetObject {
     publicKey: anchor.web3.PublicKey,
     twitterAccountPublicKey: anchor.web3.PublicKey,
     name: string,
@@ -16,7 +19,7 @@ export interface TweetProps {
     message: string,
 };
 
-export interface WriteTweetProps {
+export interface WriteTweetObject {
     publicKey: anchor.web3.PublicKey,
     twitterAccountPublicKey: anchor.web3.PublicKey,
     name: string,
