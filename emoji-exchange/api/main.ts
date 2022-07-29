@@ -21,6 +21,7 @@ async function main() {
         if (clock < time) {
             const priceFluctMultiplier = getRandomPriceFluctMultiplier();
             for (var emoji of constants.EMOJIS_LIST) {
+                
                 var currentPrice = (await util.getStoreEmoji(STORE_WALLET, emoji.seed)).price;
                 var newPrice = currentPrice * priceFluctMultiplier;
                 var [tx, provider] = await util.updateStoreEmojiPriceTransaction(STORE_WALLET, emoji.seed, newPrice);
