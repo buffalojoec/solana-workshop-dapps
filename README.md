@@ -11,6 +11,7 @@ Solana dApps for use in hackathon workshops!
 - [Programming Model (Video)](https://www.youtube.com/watch?v=xuQB9J49fe4)
 - [Solana Cookbook](https://solanacookbook.com/#contributing)
 - [Solana Playground IDE](https://beta.solpg.io/)
+- [dApp Scaffolds](https://github.com/solana-developers/create-solana-app)
 - [Program Examples](https://github.com/solana-developers/program-examples)
 - [Wallet Adapter](https://github.com/solana-labs/wallet-adapter)
 
