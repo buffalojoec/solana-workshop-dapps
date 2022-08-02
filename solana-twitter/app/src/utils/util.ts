@@ -30,13 +30,13 @@ async function getPda(provider: anchor.AnchorProvider, program: anchor.Program, 
 export async function createProfileTransaction(
     wallet: AnchorWallet,
     handle: string,
-    name: string,
+    displayName: string,
 ): Promise<[anchor.web3.Transaction, anchor.AnchorProvider]> {
     const [provider, program] = getAnchorConfigs(wallet);
     if (!provider) throw("Provider is null");
     const profilePda = (await getPda(provider, program, [constants.PROFILE_SEED]))[0];
     const ix = await program.methods.createUserAccount(
-            handle, name
+            handle, displayName
         )
         .accounts({
             twitterAccount: profilePda,
@@ -51,13 +51,13 @@ export async function createProfileTransaction(
 export async function modifyProfileTransaction(
     wallet: AnchorWallet,
     handle: string,
-    name: string,
+    displayName: string,
 ): Promise<[anchor.web3.Transaction, anchor.AnchorProvider]> {
     const [provider, program] = getAnchorConfigs(wallet);
     if (!provider) throw("Provider is null");
     const [profilePda, profilePdaBump] = await getPda(provider, program, [constants.PROFILE_SEED]);
     const ix = await program.methods.modifyUserAccount(
-            handle, name, profilePdaBump
+            handle, displayName, profilePdaBump
         )
         .accounts({
             twitterAccount: profilePda,
@@ -77,11 +77,10 @@ export async function getProfile(wallet: AnchorWallet): Promise<ProfileObject> {
         const returnedAccount = await program.account.solanaTwitterAccountInfo.fetch(profilePda);
         console.log(`Address: ${profilePda}`);
         console.log(`Handle: ${returnedAccount.handle}`);
-        console.log(`Name: ${returnedAccount.name}`);
+        console.log(`Name: ${returnedAccount.displayName}`);
         return {
             publicKey: provider.wallet.publicKey as anchor.web3.PublicKey,
-            twitterAccountPublicKey: returnedAccount.publicKey as anchor.web3.PublicKey,
-            displayName: returnedAccount.name as string,
+            displayName: returnedAccount.displayName as string,
             handle: returnedAccount.handle as string,
             tweetCount: returnedAccount.tweetCount as number,
         };
@@ -124,8 +123,7 @@ export async function getAllTweets(wallet: AnchorWallet): Promise<TweetObject[]>
         const twitterAccount = await program.account.solanaTwitterAccountInfo.fetch(tw.account.twitterAccountPubkey as anchor.web3.PublicKey);
         allTweets.push({
             publicKey: provider.wallet.publicKey as anchor.web3.PublicKey,
-            twitterAccountPublicKey: tw.account.publicKey as anchor.web3.PublicKey,
-            name: twitterAccount.name as string,
+            displayName: twitterAccount.displayName as string,
             handle: twitterAccount.handle as string,
             message: tw.account.body as string,
         });

@@ -13,7 +13,6 @@ pub fn write_tweet(
     msg!("  Solana Twitter account address: {}", ctx.accounts.twitter_account.key());
 
     let existing_twitter_account = &mut ctx.accounts.twitter_account;
-    msg!("> TWEET COUNT: {}", existing_twitter_account.tweet_count);
     existing_twitter_account.tweet_count += 1;
     
     let new_tweet = &mut ctx.accounts.tweet;

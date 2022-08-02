@@ -8,8 +8,7 @@ import * as util from '../utils/util';
 interface WriteTweetProps {
     getAllTweets: (wallet: AnchorWallet | undefined) => void,
     publicKey: anchor.web3.PublicKey,
-    twitterAccountPublicKey: anchor.web3.PublicKey,
-    name: string,
+    displayName: string,
     handle: string,
     tweetCount: number,
 };
@@ -19,7 +18,7 @@ export const WriteTweet: FC<WriteTweetProps> = (props: WriteTweetProps) => {
     const { publicKey, sendTransaction } = useWallet();
     const wallet = useAnchorWallet();
 
-    const [name, setName] = useState(props.name);
+    const [displayName, setName] = useState(props.displayName);
     const [handle, setHandle] = useState(props.handle);
     const [tweetCount, setTweetCount] = useState(props.tweetCount);
 
@@ -38,17 +37,27 @@ export const WriteTweet: FC<WriteTweetProps> = (props: WriteTweetProps) => {
     }, [wallet, props]);
 
     return(
-        <div>
-            <h2>Solana Twitter</h2>
-            <p>{props.publicKey.toString()}</p>
-            <p>{props.twitterAccountPublicKey.toString()}</p>
-            <p>{props.name}</p><p>{props.handle}</p>
-            <input placeholder="What's on your mind?" onChange={(e) => setMessage(e.target.value)}/>
-            <button onClick={() => onClickPublishTweet(
+        <div className="text-lg border-2 rounded-lg border-[#6e6e6e] px-6 py-2 my-6 bg-[#1f1f1f]">
+            <p className="text-[#a3a3a3]">
+                {props.publicKey.toString()}
+            </p>
+            <p className="text-2xl my-2">
+                <span className="text-[#29d688]">
+                    {props.displayName}
+                </span>
+                <span className="ml-10 text-[#74a8fc]">
+                    {props.handle}
+                </span>
+            </p>
+            <input 
+                className="w-96 h-12 text-black px-4 rounded-md" 
+                placeholder="What's on your mind?" onChange={(e) => setMessage(e.target.value)}/>
+            <button 
+                className="text-lg text-black border-2 rounded-lg border-[#6e6e6e] px-6 py-2 mt-2 ml-4 bg-[#74a8fc]"
+                onClick={() => onClickPublishTweet(
                 {
                     publicKey: props.publicKey,
-                    twitterAccountPublicKey: props.twitterAccountPublicKey,
-                    name: props.name,
+                    displayName: props.displayName,
                     handle: props.handle,
                     message: message,
                 }

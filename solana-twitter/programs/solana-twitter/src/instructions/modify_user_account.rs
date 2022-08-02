@@ -6,7 +6,7 @@ use crate::create_user_account::SolanaTwitterAccountInfo;
 pub fn modify_user_account(
     ctx: Context<ModifyUserAccount>,
     handle: String,
-    name: String,
+    display_name: String,
     _twitter_account_bump: u8,
 ) -> Result<()> {
 
@@ -15,7 +15,7 @@ pub fn modify_user_account(
 
     let existing_twitter_account = &mut ctx.accounts.twitter_account;
     existing_twitter_account.handle = handle;
-    existing_twitter_account.name = name;
+    existing_twitter_account.display_name = display_name;
 
     msg!("Solana Twitter account updated successfully.");
     Ok(())
@@ -24,7 +24,7 @@ pub fn modify_user_account(
 #[derive(Accounts)]
 #[instruction(
     handle: String,
-    name: String,
+    display_name: String,
     twitter_account_bump: u8,
 )]
 pub struct ModifyUserAccount<'info> {

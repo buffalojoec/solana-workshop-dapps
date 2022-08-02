@@ -27,7 +27,7 @@
           "type": "string"
         },
         {
-          "name": "name",
+          "name": "displayName",
           "type": "string"
         }
       ]
@@ -57,7 +57,7 @@
           "type": "string"
         },
         {
-          "name": "name",
+          "name": "displayName",
           "type": "string"
         },
         {
@@ -113,7 +113,7 @@
             "type": "string"
           },
           {
-            "name": "name",
+            "name": "displayName",
             "type": "string"
           },
           {
@@ -153,6 +153,6 @@
     }
   ],
   "metadata": {
-    "address": "6Yg11PwCxVuvGXxqMC3uTRb5T6XqkXw1eJVNfT24zxsw"
+    "address": "3Jtn5qNLvws2UwhxScU258V1a2xhpn8TEbgC6Qabh3Ew"
   }
 }

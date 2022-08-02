@@ -1,6 +1,6 @@
 import create, { State } from "zustand";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
-import { TweetObject } from "../types/types";
+import { TweetObject } from "../models/types";
 import * as util from '../utils/util';
 
 interface TweetsStore extends State {
