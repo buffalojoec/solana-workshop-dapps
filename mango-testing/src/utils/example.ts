@@ -52,7 +52,7 @@ import {
             order.side, // 'buy' or 'sell'
         );
     }
-    let price = mangoGroup.getPrice(0, new MangoCache(groupConfig.publicKey, null));
-    console.log("SOL Price:")
-    console.log(price.toNumber());
+    // let price = mangoGroup.getPrice(mangoGroup.getTokenIndex(), new MangoCache(groupConfig.publicKey, null));
+    // console.log("SOL Price:")
+    // console.log(price.toNumber());
 })();

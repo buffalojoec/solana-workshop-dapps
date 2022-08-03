@@ -11,6 +11,7 @@ import pkg from '../../../package.json';
 
 // Store
 import useUserSOLBalanceStore from '../../stores/useUserSOLBalanceStore';
+import { TestComponent } from 'components/TestComponents';
 
 export const HomeView: FC = ({ }) => {
   const wallet = useWallet();
@@ -47,6 +48,7 @@ export const HomeView: FC = ({ }) => {
           {/* {wallet.publicKey && <p>Public Key: {wallet.publicKey.toBase58()}</p>} */}
           {wallet && <p>SOL Balance: {(balance || 0).toLocaleString()}</p>}
         </div>
+        <TestComponent />
       </div>
     </div>
   );
