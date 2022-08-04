@@ -1,10 +1,20 @@
 import { FC, useCallback, useState } from 'react';
-import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
-import { OrderType, StoreEmoji } from '../types/types';
+import { AnchorWallet, useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
+import { OrderType } from '../models/types';
 import * as util from '../utils/util';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 
-export const StoreOrder: FC<StoreEmoji> = (props: StoreEmoji) => {
+interface StoreOrderProps {
+  getAllStoreEmojis: (wallet: AnchorWallet | undefined) => void,
+  getAllUserEmojis: (wallet: AnchorWallet | undefined) => void,
+  emojiName: string,
+  display: string,
+  balance: number,
+  price: number,
+}
+
+export const StoreOrder: FC<StoreOrderProps> = (props: StoreOrderProps) => {
   
   const { publicKey, sendTransaction } = useWallet();
   const wallet = useAnchorWallet();
@@ -20,21 +30,25 @@ export const StoreOrder: FC<StoreEmoji> = (props: StoreEmoji) => {
     );
     const sx = await sendTransaction(tx, provider.connection);
     await provider.connection.confirmTransaction(sx);
-  }, [quantity]);
+    props.getAllStoreEmojis(wallet);
+    props.getAllUserEmojis(wallet);
+    setQuantity(0);
+  }, [quantity, wallet]);
 
   return (
     <div>
-      <span style={{fontSize: "32px"}}>{props.display}</span>
+      <span className="text-2xl">{props.display}</span>
 
-      <span style={{fontSize: "20px", marginLeft: "1.25em", marginRight: "0.75em"}}>{props.balance}</span>
+      <span className="text-l ml-4 mr-2">{props.balance}</span>
 
-      <span style={{fontSize: "20px", marginLeft: "1.25em", marginRight: "0.75em"}}>{props.price}</span>
+      <span className="text-l ml-4 mr-2">{`${props.price / LAMPORTS_PER_SOL} SOL`}</span>
 
       <input 
         type="number" 
         className="input input-bordered max-w-xs m-2" 
         placeholder="Quantity"
-        onChange={(e) => setQuantity(Number(e.target.value))}
+        value={quantity}
+        onChange={(e) => setQuantity(+e.target.value as number)}
       />
       
       <button

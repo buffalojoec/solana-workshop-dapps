@@ -1,7 +1,7 @@
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { FC } from 'react';
-import { WalletContextProvider } from '../contexts/ContextProvider';
+import { ContextProvider } from '../contexts/ContextProvider';
 import { AppBar } from '../components/AppBar';
 import { ContentContainer } from '../components/ContentContainer';
 import { Footer } from '../components/Footer';
@@ -17,7 +17,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
             <title>Solana Scaffold Lite</title>
           </Head>
 
-          <WalletContextProvider>
+          <ContextProvider>
             <div className="flex flex-col h-screen">
               <Notifications />
               <AppBar/>
@@ -26,7 +26,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
               </ContentContainer>
               <Footer/>
             </div>
-          </WalletContextProvider>
+          </ContextProvider>
         </>
     );
 };

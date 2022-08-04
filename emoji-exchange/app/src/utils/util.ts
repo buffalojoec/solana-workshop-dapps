@@ -4,10 +4,10 @@ import * as constants from './const';
 import { 
     convertOrderTypeToAnchorPayload,
     OrderType, 
-    StoreEmoji, 
-    UserEmoji,
-    UserMetadata
-} from '../types/types';
+    StoreEmojiObject, 
+    UserEmojiObject,
+    UserMetadataObject
+} from '../models/types';
 
 
 export function getAnchorConfigs(wallet: AnchorWallet): [anchor.AnchorProvider, anchor.Program] | [null, null] {
@@ -58,7 +58,7 @@ export async function createStoreEmojiTransaction(
 export async function getStoreEmoji(
     wallet: AnchorWallet,
     emojiSeed: string,
-): Promise<StoreEmoji> {
+): Promise<StoreEmojiObject> {
     const [provider, program] = getAnchorConfigs(wallet);
     if (!provider) throw("Provider is null");
     const storeEmojiPda = (await anchor.web3.PublicKey.findProgramAddress(
@@ -82,17 +82,20 @@ export async function getStoreEmoji(
     }
 }
 
-export async function loadStore(wallet: AnchorWallet): Promise<StoreEmoji[]> {
-    const [provider, program] = getAnchorConfigs(wallet);
-    if (!provider) throw("Provider is null");
-    let store: StoreEmoji[] = [];
-    const storeEmojiAccounts = await program.account.storeEmoji.all();
-    for (var se of storeEmojiAccounts) {
+export async function loadStore(wallet: AnchorWallet): Promise<StoreEmojiObject[]> {
+    let store: StoreEmojiObject[] = [];
+    for (var emoji of constants.EMOJIS_LIST) {
+        const storeEmojiAccount = await getStoreEmoji(wallet, emoji.seed);
+        console.log(`Successfully loaded store emoji account for ${emoji.seed}`);
+        console.log(`emojiName: ${storeEmojiAccount.emojiName as string}`);
+        console.log(`display: ${storeEmojiAccount.display as string}`);
+        console.log(`balance: ${storeEmojiAccount.balance as number}`);
+        console.log(`price: ${storeEmojiAccount.price as number}`);
         store.push({
-            emojiName: se.account.name as string,
-            display: se.account.display as string,
-            balance: se.account.balance as number,
-            price: se.account.price as number,
+            emojiName: storeEmojiAccount.emojiName as string,
+            display: storeEmojiAccount.display as string,
+            balance: storeEmojiAccount.balance as number,
+            price: storeEmojiAccount.price as number,
         });
     };
     return store;
@@ -157,7 +160,7 @@ export async function createUserMetadataTransaction(
 
 export async function getUserMetadata(
     wallet: AnchorWallet,
-): Promise<UserMetadata> {
+): Promise<UserMetadataObject> {
     const [provider, program] = getAnchorConfigs(wallet);
     if (!provider) throw("Provider is null");
     const userMetadataPda = (await anchor.web3.PublicKey.findProgramAddress(
@@ -221,7 +224,7 @@ export async function createUserEmojiTransaction(
 export async function getUserEmoji(
     wallet: AnchorWallet,
     emojiSeed: string,
-): Promise<UserEmoji> {
+): Promise<UserEmojiObject> {
     const [provider, program] = getAnchorConfigs(wallet);
     if (!provider) throw("Provider is null");
     const userEmojiPda = (await anchor.web3.PublicKey.findProgramAddress(
@@ -245,18 +248,25 @@ export async function getUserEmoji(
     }
 }
 
-export async function loadUserStore(wallet: AnchorWallet): Promise<UserEmoji[]> {
-    const [provider, program] = getAnchorConfigs(wallet);
-    if (!provider) throw("Provider is null");
-    let userStore: UserEmoji[] = [];
-    const userEmojiAccounts = await program.account.userEmoji.all();
-    for (var ue of userEmojiAccounts) {
-        userStore.push({
-            emojiName: ue.account.name as string,
-            display: ue.account.display as string,
-            balance: ue.account.balance as number,
-            costAverage: ue.account.costAverage as number,
-        });
+export async function loadUserStore(wallet: AnchorWallet): Promise<UserEmojiObject[]> {
+    let userStore: UserEmojiObject[] = [];
+    for (var emoji of constants.EMOJIS_LIST) {
+        try {
+            const userEmojiAccount = await getUserEmoji(wallet, emoji.seed);
+            console.log(`Successfully loaded user emoji account for ${emoji.seed}`);
+            console.log(`emojiName: ${userEmojiAccount.emojiName as string}`);
+            console.log(`display: ${userEmojiAccount.display as string}`);
+            console.log(`balance: ${userEmojiAccount.balance as number}`);
+            console.log(`costAverage: ${userEmojiAccount.costAverage as number}`);
+            userStore.push({
+                emojiName: userEmojiAccount.emojiName as string,
+                display: userEmojiAccount.display as string,
+                balance: userEmojiAccount.balance as number,
+                costAverage: userEmojiAccount.costAverage as number,
+            });
+        } catch (e) {
+            console.log(`User emoji account doesn't exist for ${emoji.seed}. Skipping...`)
+        }
     };
     return userStore;
 }

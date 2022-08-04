@@ -1,10 +1,20 @@
 import { FC, useCallback, useState } from 'react';
-import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
-import { OrderType, UserEmoji } from '../types/types';
+import { AnchorWallet, useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
+import { OrderType } from '../models/types';
 import * as util from '../utils/util';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 
-export const UserOrder: FC<UserEmoji> = (props: UserEmoji) => {
+interface UserOrderProps {
+  getAllStoreEmojis: (wallet: AnchorWallet | undefined) => void,
+  getAllUserEmojis: (wallet: AnchorWallet | undefined) => void,
+  emojiName: string,
+  display: string,
+  balance: number,
+  costAverage: number,
+}
+
+export const UserOrder: FC<UserOrderProps> = (props: UserOrderProps) => {
   
   const { publicKey, sendTransaction } = useWallet();
   const wallet = useAnchorWallet();
@@ -20,7 +30,10 @@ export const UserOrder: FC<UserEmoji> = (props: UserEmoji) => {
     );
     const sx = await sendTransaction(tx, provider.connection);
     await provider.connection.confirmTransaction(sx);
-  }, [quantity]);
+    props.getAllStoreEmojis(wallet);
+    props.getAllUserEmojis(wallet);
+    setQuantity(0);
+  }, [quantity, wallet]);
 
   return (
     <div>
@@ -28,13 +41,14 @@ export const UserOrder: FC<UserEmoji> = (props: UserEmoji) => {
 
       <span style={{fontSize: "20px", marginLeft: "1.25em", marginRight: "0.75em"}}>{props.balance}</span>
 
-      <span style={{fontSize: "20px", marginLeft: "1.25em", marginRight: "0.75em"}}>{props.costAverage}</span>
+      <span style={{fontSize: "20px", marginLeft: "1.25em", marginRight: "0.75em"}}>{`${props.costAverage / LAMPORTS_PER_SOL} SOL`}</span>
 
       <input 
         type="number" 
         className="input input-bordered max-w-xs m-2" 
         placeholder="Quantity"
-        onChange={(e) => setQuantity(Number(e.target.value))}
+        value={quantity}
+        onChange={(e) => setQuantity(+e.target.value as number)}
       />
       
       <button
