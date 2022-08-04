@@ -190,12 +190,17 @@
       "name": "placeOrder",
       "accounts": [
         {
-          "name": "storeEmoji",
+          "name": "userMetadata",
           "isMut": true,
           "isSigner": false
         },
         {
           "name": "userEmoji",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "storeEmoji",
           "isMut": true,
           "isSigner": false
         },
@@ -217,11 +222,15 @@
       ],
       "args": [
         {
-          "name": "storeEmojiBump",
+          "name": "userMetadataBump",
           "type": "u8"
         },
         {
           "name": "userEmojiBump",
+          "type": "u8"
+        },
+        {
+          "name": "storeEmojiBump",
           "type": "u8"
         },
         {
@@ -278,6 +287,10 @@
           {
             "name": "username",
             "type": "string"
+          },
+          {
+            "name": "tradeCount",
+            "type": "u32"
           }
         ]
       }
@@ -343,6 +356,6 @@
     }
   ],
   "metadata": {
-    "address": "4P1RcdiRu957rFgQvJoyHEaxjU1o3vz2Jt3QJVbZmQJn"
+    "address": "7chu7NvG5P8fAKYv6tGUnGEPb6WV28kGK9xiWExfwNSG"
   }
 }

@@ -14,6 +14,7 @@ pub fn create_user_metadata(
     msg!("Request to create User Metadata PDA for wallet: {}", &ctx.accounts.user_wallet.key);
     let user_metadata = &mut ctx.accounts.user_metadata;
     user_metadata.username = username;
+    user_metadata.trade_count = 0;
     msg!("Success.");
     Ok(())
 }
@@ -26,7 +27,7 @@ pub struct CreateUserMetadata<'info> {
     #[account(
         init, 
         payer = user_wallet, 
-        space = 8 + 48,
+        space = 8 + 48 + 32,
         seeds = [
             user_wallet.key.as_ref(),
             b"_user_metadata"
@@ -42,6 +43,7 @@ pub struct CreateUserMetadata<'info> {
 #[account]
 pub struct UserMetadata {
     pub username: String,
+    pub trade_count: u32,
 }
 
 

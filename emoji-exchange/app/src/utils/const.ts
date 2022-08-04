@@ -10,6 +10,8 @@ export const METADATA_SEED = "_user_metadata";
 export const DEFAULT_STARTING_BALANCE = 40;
 export const DEFAULT_STARTING_PRICE = 1000000;
 
+export const MIN_TRADE_COUNT_FOR_EXPORT = 3;
+
 export const EMOJIS_LIST = [
     { seed: "emoji_1", display: "😀" },
     { seed: "emoji_2", display: "👻" },

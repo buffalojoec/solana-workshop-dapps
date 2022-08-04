@@ -15,7 +15,7 @@ function createKeypairFromFile(path: string): anchor.web3.Keypair {
 
 describe("emoji-exchange", async () => {
 
-  const testFundAmount: number = 5 * anchor.web3.LAMPORTS_PER_SOL;
+  const testFundAmount: number = 1 * anchor.web3.LAMPORTS_PER_SOL;
 
   const connection = new anchor.web3.Connection(constants.NETWORK, constants.PREFLIGHT_COMMITMENT);
   const storeWallet = new anchor.Wallet(createKeypairFromFile(__dirname + '/../app/wallet/master.json'));
@@ -92,7 +92,7 @@ describe("emoji-exchange", async () => {
       (await service.createUserMetadataTransaction(userWallet1, "test_user_1"))[0],
       [userWallet1.payer]
     );
-    await printUsername(userWallet1);
+    await printMetadata(userWallet1);
   });
 
   it("User #1 buy some emojis", async () => {
@@ -104,6 +104,7 @@ describe("emoji-exchange", async () => {
     await printStoreBalances();
     await printUserBalances(userWallet1);
     await printVaultBalance(vaultPda);
+    await printMetadata(userWallet1);
   });
   it("User #1 buy a few more of the same emoji", async () => {
     await anchor.web3.sendAndConfirmTransaction(
@@ -114,6 +115,7 @@ describe("emoji-exchange", async () => {
     await printStoreBalances();
     await printUserBalances(userWallet1);
     await printVaultBalance(vaultPda);
+    await printMetadata(userWallet1);
   });
   it("User #1 sell some of that same emoji", async () => {
     await anchor.web3.sendAndConfirmTransaction(
@@ -124,6 +126,7 @@ describe("emoji-exchange", async () => {
     await printStoreBalances();
     await printUserBalances(userWallet1);
     await printVaultBalance(vaultPda);
+    await printMetadata(userWallet1);
   });
 
   it("Initalize user #2 metadata", async () => {
@@ -133,7 +136,7 @@ describe("emoji-exchange", async () => {
       (await service.createUserMetadataTransaction(userWallet2, "test_user_2"))[0],
       [userWallet2.payer]
     );
-    await printUsername(userWallet2);
+    await printMetadata(userWallet2);
   });
 
   it("User #2 try to buy too many emojis", async () => {
@@ -152,6 +155,7 @@ describe("emoji-exchange", async () => {
     assert(orderNotPlaced, `Loaded sell order failed to be blocked.`);
     await printStoreBalances();
     await printUserBalances(userWallet2);
+    await printMetadata(userWallet2);
   });
   it("User #2 buy some emojis", async () => {
     await anchor.web3.sendAndConfirmTransaction(
@@ -162,6 +166,7 @@ describe("emoji-exchange", async () => {
     await printStoreBalances();
     await printUserBalances(userWallet2);
     await printVaultBalance(vaultPda);
+    await printMetadata(userWallet2);
   });
   it("User #2 try to sell too many emojis", async () => {
     let orderNotPlaced: boolean = true;
@@ -179,6 +184,7 @@ describe("emoji-exchange", async () => {
     await printStoreBalances();
     await printUserBalances(userWallet2);
     await printVaultBalance(vaultPda);
+    await printMetadata(userWallet2);
   });
   it("User #2 sell some emojis", async () => {
     await anchor.web3.sendAndConfirmTransaction(
@@ -189,6 +195,7 @@ describe("emoji-exchange", async () => {
     await printStoreBalances();
     await printUserBalances(userWallet2);
     await printVaultBalance(vaultPda);
+    await printMetadata(userWallet2);
   });
 
 
@@ -219,10 +226,11 @@ describe("emoji-exchange", async () => {
     };
   }
 
-  async function printUsername(userWallet: anchor.Wallet) {
-    const username = await service.getUserMetadata(userWallet);
+  async function printMetadata(userWallet: anchor.Wallet) {
+    const metadata = await service.getUserMetadata(userWallet);
     console.log("-------------------------------------------------------------------------------");
-    console.log(`Username: ${username.username}`);
+    console.log(`Username: ${metadata.username}`);
+    console.log(`Trade Count: ${metadata.tradeCount}`);
   }
   
   async function printUserBalances(userWallet: anchor.Wallet) {

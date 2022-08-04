@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import useMangoMarketStore from "stores/useMangoMarketStore";
 
 
@@ -6,6 +6,10 @@ import useMangoMarketStore from "stores/useMangoMarketStore";
 export const TestComponent: FC = () => {
 
     const { price, getMangoMarket } = useMangoMarketStore();
+
+    useEffect(() => {
+        getMangoMarket();
+    }, []);
 
     return(
         <div>

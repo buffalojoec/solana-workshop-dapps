@@ -25,6 +25,7 @@ export interface UserEmojiObject {
 export interface UserMetadataObject {
     pubkey: anchor.web3.PublicKey,
     username: string,
+    tradeCount: number,
 }
 
 export function convertOrderTypeToAnchorPayload(variant: OrderType) {

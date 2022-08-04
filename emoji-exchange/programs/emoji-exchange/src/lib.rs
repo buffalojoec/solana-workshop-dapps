@@ -5,7 +5,7 @@ pub mod instructions;
 use instructions::*;
 
 
-declare_id!("4P1RcdiRu957rFgQvJoyHEaxjU1o3vz2Jt3QJVbZmQJn");
+declare_id!("7chu7NvG5P8fAKYv6tGUnGEPb6WV28kGK9xiWExfwNSG");
 
 
 #[program]
@@ -92,8 +92,9 @@ pub mod emoji_exchange {
 
     pub fn place_order(
         ctx: Context<PlaceOrder>,
-        store_emoji_bump: u8,
+        user_metadata_bump: u8,
         user_emoji_bump: u8,
+        store_emoji_bump: u8,
         vault_bump: u8,
         emoji_seed: String,
         order_type: OrderType, 
@@ -102,8 +103,9 @@ pub mod emoji_exchange {
         
         order::place_order(
             ctx,
-            store_emoji_bump,
+            user_metadata_bump,
             user_emoji_bump,
+            store_emoji_bump,
             vault_bump,
             emoji_seed,
             order_type,

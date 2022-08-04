@@ -4,7 +4,7 @@ use anchor_lang::{
 };
 
 use crate::store::StoreEmoji;
-use crate::user::UserEmoji;
+use crate::user::{ UserEmoji, UserMetadata };
 use crate::vault::Vault;
 
 
@@ -13,16 +13,18 @@ use crate::vault::Vault;
 */
 pub fn place_order(
     ctx: Context<PlaceOrder>,
-    _store_emoji_bump: u8,
+    _user_metadata_bump: u8,
     _user_emoji_bump: u8,
+    _store_emoji_bump: u8,
     _vault_bump: u8,
     emoji_seed: String,
     order_type: OrderType, 
     quantity: u8,
 ) -> Result<()> {
 
-    let store_emoji = &mut ctx.accounts.store_emoji;
+    let user_metadata = &mut ctx.accounts.user_metadata;
     let user_emoji = &mut ctx.accounts.user_emoji;
+    let store_emoji = &mut ctx.accounts.store_emoji;
     match order_type {
         OrderType::Buy => {
             msg!("New order:    BUY : {} : {}", quantity, emoji_seed);
@@ -46,6 +48,7 @@ pub fn place_order(
             user_emoji.cost_average = ((user_emoji.cost_average * user_emoji.balance as u64) + (store_emoji.price * quantity as u64)) / new_user_balance as u64;
             store_emoji.balance -= quantity;
             user_emoji.balance = new_user_balance;
+            user_metadata.trade_count += 1;
         },
         OrderType::Sell => {
             msg!("New order:    SELL : {} : {}", quantity, emoji_seed);
@@ -59,6 +62,7 @@ pub fn place_order(
             **ctx.accounts.user_wallet.to_account_info().try_borrow_mut_lamports()? += store_emoji.price * quantity as u64;
             store_emoji.balance += quantity;
             user_emoji.balance -= quantity;
+            user_metadata.trade_count += 1;
         }
     };
     msg!("Order processed successfully.");
@@ -67,8 +71,9 @@ pub fn place_order(
 
 #[derive(Accounts)]
 #[instruction(
-    store_emoji_bump: u8,
+    user_metadata_bump: u8,
     user_emoji_bump: u8,
+    store_emoji_bump: u8,
     vault_bump: u8,
     emoji_seed: String,
     order_type: OrderType, 
@@ -78,12 +83,12 @@ pub struct PlaceOrder<'info> {
     #[account(
         mut, 
         seeds = [
-            b"store_", 
-            emoji_seed.as_bytes()
+            user_wallet.key.as_ref(),
+            b"_user_metadata"
         ],
-        bump = store_emoji_bump
+        bump = user_metadata_bump
     )]
-    pub store_emoji: Account<'info, StoreEmoji>,
+    pub user_metadata: Account<'info, UserMetadata>,
     #[account(
         mut, 
         seeds = [
@@ -94,6 +99,15 @@ pub struct PlaceOrder<'info> {
         bump = user_emoji_bump
     )]
     pub user_emoji: Account<'info, UserEmoji>,
+    #[account(
+        mut, 
+        seeds = [
+            b"store_", 
+            emoji_seed.as_bytes()
+        ],
+        bump = store_emoji_bump
+    )]
+    pub store_emoji: Account<'info, StoreEmoji>,
     #[account(
         mut, 
         seeds = [ b"vault" ],

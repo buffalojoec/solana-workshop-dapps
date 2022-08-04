@@ -175,6 +175,7 @@ export async function getUserMetadata(
         return {
             pubkey: provider.wallet.publicKey as anchor.web3.PublicKey,
             username: response.username as string,
+            tradeCount: response.tradeCount as number,
         };
     } catch (e) {
         throw Error(`Metadata account not found for ${wallet.publicKey}`);
@@ -286,14 +287,10 @@ export async function placeOrder(
     } catch (_) {
         tx = (await createUserEmojiTransaction(provider.wallet, emojiSeed))[0];
     };
-    const [vaultPda, vaultPdaBump] = await anchor.web3.PublicKey.findProgramAddress(
-        [ Buffer.from(constants.VAULT_SEED) ],
-        program.programId
-    );
-    const [storeEmojiPda, storeEmojiPdaBump] = await anchor.web3.PublicKey.findProgramAddress(
+    const [userMetadataPda, userMetadataBump] = await anchor.web3.PublicKey.findProgramAddress(
         [
-            Buffer.from(constants.STORE_SEED),
-            Buffer.from(emojiSeed),
+            provider.wallet.publicKey.toBuffer(),
+            Buffer.from(constants.METADATA_SEED),
         ],
         program.programId
     );
@@ -305,17 +302,30 @@ export async function placeOrder(
         ],
         program.programId
     );
+    const [storeEmojiPda, storeEmojiPdaBump] = await anchor.web3.PublicKey.findProgramAddress(
+        [
+            Buffer.from(constants.STORE_SEED),
+            Buffer.from(emojiSeed),
+        ],
+        program.programId
+    );
+    const [vaultPda, vaultPdaBump] = await anchor.web3.PublicKey.findProgramAddress(
+        [ Buffer.from(constants.VAULT_SEED) ],
+        program.programId
+    );
     const ix = await program.methods.placeOrder(
-        storeEmojiPdaBump,
+        userMetadataBump,
         userEmojiPdaBump,
+        storeEmojiPdaBump,
         vaultPdaBump,
         emojiSeed, 
         convertOrderTypeToAnchorPayload(orderType), 
         quantity
     )
         .accounts({
-            storeEmoji: storeEmojiPda,
+            userMetadata: userMetadataPda,
             userEmoji: userEmojiPda,
+            storeEmoji: storeEmojiPda,
             vault: vaultPda,
             userWallet: provider.wallet.publicKey,
             systemProgram: anchor.web3.SystemProgram.programId,

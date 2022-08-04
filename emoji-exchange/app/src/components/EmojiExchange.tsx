@@ -7,6 +7,7 @@ import useUserMetadataStore from 'stores/UserMetadataStore';
 import { StoreOrder } from './StoreOrder';
 import { UserOrder } from './UserOrder';
 import * as util from '../utils/util';
+import { MIN_TRADE_COUNT_FOR_EXPORT } from '../utils/const';
 
 export const EmojiExchange: FC = () => {
 
@@ -17,8 +18,8 @@ export const EmojiExchange: FC = () => {
   const balance = useUserSOLBalanceStore((s) => s.balance)
   const { getUserSOLBalance } = useUserSOLBalanceStore()
 
-  const [username, setUsername] = useState('');
-
+  const [ username, setUsername ] = useState('');
+  const [ exportEligible, setExportEligible ] = useState(false);
   const { userMetadata, getUserMetadata } = useUserMetadataStore();
   const { storeEmojis, getAllStoreEmojis } = useStoreEmojiStore();
   const { userEmojis, getAllUserEmojis } = useUserEmojiStore();
@@ -33,7 +34,10 @@ export const EmojiExchange: FC = () => {
     getUserMetadata(wallet);
     getAllStoreEmojis(wallet);
     getAllUserEmojis(wallet);
-  }, [wallet]);
+    if (userMetadata) {
+      if (userMetadata.tradeCount >= MIN_TRADE_COUNT_FOR_EXPORT) setExportEligible(true);
+    };
+  }, [wallet, userMetadata]);
 
   useEffect(() => {
     if (publicKey) {
@@ -51,6 +55,13 @@ export const EmojiExchange: FC = () => {
           </div>
           {userMetadata ? 
             <div>
+              <p>Trade Count: {userMetadata.tradeCount}</p>
+              {exportEligible &&
+                <div>
+                  <p>Congratulations! You can now export your burner wallet's private key!</p>
+                  <p>Now you can take ownership of the mainnet-beta SOL in the burner!</p>
+                </div>
+              }
               <span>Store emojis:</span>
               {storeEmojis.map((s, i) => { 
                 return <StoreOrder key={i} getAllStoreEmojis={getAllStoreEmojis} getAllUserEmojis={getAllUserEmojis} emojiName={s.emojiName} display={s.display} price={s.price} balance={s.balance} />
