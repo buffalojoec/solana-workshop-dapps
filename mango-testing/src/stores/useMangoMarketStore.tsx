@@ -23,6 +23,9 @@ interface MangoMarketStore extends State {
   getMangoMarket: () => void
 }
 
+/**
+ * This is me trying to unwind some of the embedded functions inside Serum
+ */
 function getGroup(cluster: string, group: string): GroupConfig {
     for (var g of groups) {
         if (g.cluster === cluster && g.name === group) {
