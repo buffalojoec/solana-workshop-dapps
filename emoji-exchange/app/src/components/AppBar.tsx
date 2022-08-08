@@ -1,9 +1,40 @@
-import { FC } from 'react';
-import Link from "next/link";
-
+import { FC, useCallback } from 'react';
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { LAMPORTS_PER_SOL, TransactionSignature } from '@solana/web3.js';
+import { useAutoConnect } from '../contexts/AutoConnectProvider';
+import { notify } from "../utils/notifications";
+import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
+import NetworkSwitcher from './NetworkSwitcher';
+
 
 export const AppBar: FC = props => {
+
+  const { autoConnect, setAutoConnect } = useAutoConnect();
+  const { connection } = useConnection();
+  const { publicKey } = useWallet();
+  const { getUserSOLBalance } = useUserSOLBalanceStore();
+
+  const onClick = useCallback(async () => {
+    if (!publicKey) {
+        console.log('error', 'Wallet not connected!');
+        notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
+        return;
+    }
+
+    let signature: TransactionSignature = '';
+
+    try {
+        signature = await connection.requestAirdrop(publicKey, LAMPORTS_PER_SOL);
+        await connection.confirmTransaction(signature, 'confirmed');
+        notify({ type: 'success', message: 'Airdrop successful!', txid: signature });
+
+        getUserSOLBalance(publicKey, connection);
+    } catch (error: any) {
+        notify({ type: 'error', message: `Airdrop failed!`, description: error?.message, txid: signature });
+        console.log('error', `Airdrop failed! ${error?.message}`, signature);
+    }
+  }, [publicKey, connection, getUserSOLBalance]);
 
   return (
     <div>
@@ -55,7 +86,7 @@ export const AppBar: FC = props => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
-            {/* <ul tabIndex={0} className="p-2 shadow menu dropdown-content bg-base-100 rounded-box sm:w-52">
+            <ul tabIndex={0} className="p-2 shadow menu dropdown-content bg-base-100 rounded-box sm:w-52">
               <li>
                 <div className="form-control">
                   <label className="cursor-pointer label">
@@ -64,7 +95,7 @@ export const AppBar: FC = props => {
                   </label>
                 </div>
               </li>
-            </ul> */}
+            </ul>
           </div>
           <WalletMultiButton className="btn btn-ghost mr-4" />
         </div>

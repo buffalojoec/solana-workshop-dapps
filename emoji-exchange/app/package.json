@@ -4,10 +4,9 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "dev": "cp ../target/idl/emoji_exchange.json ./src/utils/idl.json && ts-node ./init/init.ts && next dev",
-    "dev-no-init": "cp ../target/idl/emoji_exchange.json ./src/utils/idl.json && next dev",
+    "dev": "cp ../target/idl/emoji_exchange.json ./src/utils/idl.json && next dev",
     "build": "cp ../target/idl/emoji_exchange.json ./src/utils/idl.json && next build",
-    "start": "cp ../target/idl/emoji_exchange.json ./src/utils/idl.json && ts-node ./init/init.ts && next start",
+    "start": "cp ../target/idl/emoji_exchange.json ./src/utils/idl.json && next start",
     "lint": "next lint"
   },
   "dependencies": {

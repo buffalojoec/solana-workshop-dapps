@@ -190,12 +190,17 @@
       "name": "placeOrder",
       "accounts": [
         {
-          "name": "storeEmoji",
+          "name": "userMetadata",
           "isMut": true,
           "isSigner": false
         },
         {
           "name": "userEmoji",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "storeEmoji",
           "isMut": true,
           "isSigner": false
         },
@@ -217,11 +222,15 @@
       ],
       "args": [
         {
-          "name": "storeEmojiBump",
+          "name": "userMetadataBump",
           "type": "u8"
         },
         {
           "name": "userEmojiBump",
+          "type": "u8"
+        },
+        {
+          "name": "storeEmojiBump",
           "type": "u8"
         },
         {
@@ -271,18 +280,6 @@
       }
     },
     {
-      "name": "UserMetadata",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "username",
-            "type": "string"
-          }
-        ]
-      }
-    },
-    {
       "name": "UserEmoji",
       "type": {
         "kind": "struct",
@@ -302,6 +299,26 @@
           {
             "name": "costAverage",
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserMetadata",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "name": "tradeCount",
+            "type": "u32"
+          },
+          {
+            "name": "cashedOut",
+            "type": "bool"
           }
         ]
       }
@@ -343,6 +360,6 @@
     }
   ],
   "metadata": {
-    "address": "AfJYPEKypDMsraozL24a79W4Xrq9wFXzrWqy5J2ijxgo"
+    "address": "CrMdx78x6xJCpCkBkQ5Fdqyd99HBynYGK5t9AezgNbCN"
   }
 }
