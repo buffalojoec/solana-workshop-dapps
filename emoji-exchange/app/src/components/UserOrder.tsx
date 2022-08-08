@@ -41,18 +41,18 @@ export const UserOrder: FC<UserOrderProps> = (props: UserOrderProps) => {
 
       <span style={{fontSize: "20px", marginLeft: "1.25em", marginRight: "0.75em"}}>{props.balance}</span>
 
-      <span style={{fontSize: "20px", marginLeft: "1.25em", marginRight: "0.75em"}}>{`${props.costAverage / LAMPORTS_PER_SOL} SOL`}</span>
+      <span style={{fontSize: "20px", marginLeft: "1.25em", marginRight: "0.75em"}}>{`${(props.costAverage / LAMPORTS_PER_SOL).toFixed(4)} SOL`}</span>
 
       <input 
         type="number" 
-        className="input input-bordered max-w-xs m-2" 
+        className="input input-bordered w-20 m-2" 
         placeholder="Quantity"
         value={quantity}
         onChange={(e) => setQuantity(+e.target.value as number)}
       />
       
       <button
-        className="px-8 m-2 btn animate-pulse bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:from-pink-500 hover:to-yellow-500 ..."
+        className="px-8 m-2 w-20 btn animate-pulse bg-[#d4005c] hover:from-pink-500 hover:to-yellow-500 ..."
         onClick={() => onClickOrder()}>
           <span>Sell</span>
       </button>

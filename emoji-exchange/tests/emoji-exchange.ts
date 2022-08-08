@@ -1,6 +1,5 @@
 import * as anchor from "@project-serum/anchor";
 import { assert } from "chai";
-
 import * as constants from '../app/src/utils/const';
 import * as service from '../app/src/utils/util';
 import { OrderType } from '../app/src/models/types';
@@ -15,8 +14,6 @@ function createKeypairFromFile(path: string): anchor.web3.Keypair {
 
 describe("emoji-exchange", async () => {
 
-  const testFundAmount: number = 1 * anchor.web3.LAMPORTS_PER_SOL;
-
   const connection = new anchor.web3.Connection(constants.NETWORK, constants.PREFLIGHT_COMMITMENT);
   const storeWallet = new anchor.Wallet(createKeypairFromFile(__dirname + '/../app/wallet/master.json'));
 
@@ -28,33 +25,20 @@ describe("emoji-exchange", async () => {
   let userWallet2: anchor.Wallet;
 
   it("Initialize vault", async () => {
-    [provider, program] = service.getAnchorConfigs(storeWallet);
-    [vaultPda, vaultPdaBump] = await anchor.web3.PublicKey.findProgramAddress(
-      [ Buffer.from(constants.VAULT_SEED) ],
-      program.programId
-    );
-    await program.methods.createVault()
-      .accounts({
-        vault: vaultPda,
-        storeWallet: storeWallet.publicKey,
-        systemProgram: anchor.web3.SystemProgram.programId,
-      })
-      .signers([storeWallet.payer])
-      .rpc();
+      await anchor.web3.sendAndConfirmTransaction(
+        connection,
+        (await service.initializeVault(storeWallet))[0],
+        [storeWallet.payer]
+      );
   });
 
   it("Fund vault", async () => {
-    await program.methods.fundVault(
-      vaultPdaBump, new anchor.BN(testFundAmount)
-    )
-      .accounts({
-        vault: vaultPda,
-        storeWallet: storeWallet.publicKey,
-        systemProgram: anchor.web3.SystemProgram.programId,
-      })
-      .signers([storeWallet.payer])
-      .rpc();
-    await printVaultBalance(vaultPda);
+    await anchor.web3.sendAndConfirmTransaction(
+      connection,
+      (await service.fundVault(storeWallet, constants.INIT_FUND_AMOUNT))[0],
+      [storeWallet.payer]
+    );
+    await printVaultBalance();
   });
 
   it("Initalize store", async () => {
@@ -103,7 +87,7 @@ describe("emoji-exchange", async () => {
     );
     await printStoreBalances();
     await printUserBalances(userWallet1);
-    await printVaultBalance(vaultPda);
+    await printVaultBalance();
     await printMetadata(userWallet1);
   });
   it("User #1 buy a few more of the same emoji", async () => {
@@ -114,7 +98,7 @@ describe("emoji-exchange", async () => {
     );
     await printStoreBalances();
     await printUserBalances(userWallet1);
-    await printVaultBalance(vaultPda);
+    await printVaultBalance();
     await printMetadata(userWallet1);
   });
   it("User #1 sell some of that same emoji", async () => {
@@ -125,7 +109,7 @@ describe("emoji-exchange", async () => {
     );
     await printStoreBalances();
     await printUserBalances(userWallet1);
-    await printVaultBalance(vaultPda);
+    await printVaultBalance();
     await printMetadata(userWallet1);
   });
 
@@ -150,7 +134,7 @@ describe("emoji-exchange", async () => {
       orderNotPlaced = false;
     } catch (_) {
       orderNotPlaced = true;
-      await printVaultBalance(vaultPda);
+      await printVaultBalance();
     }
     assert(orderNotPlaced, `Loaded sell order failed to be blocked.`);
     await printStoreBalances();
@@ -165,7 +149,7 @@ describe("emoji-exchange", async () => {
     );
     await printStoreBalances();
     await printUserBalances(userWallet2);
-    await printVaultBalance(vaultPda);
+    await printVaultBalance();
     await printMetadata(userWallet2);
   });
   it("User #2 try to sell too many emojis", async () => {
@@ -183,7 +167,7 @@ describe("emoji-exchange", async () => {
     assert(orderNotPlaced, `Loaded sell order failed to be blocked.`);
     await printStoreBalances();
     await printUserBalances(userWallet2);
-    await printVaultBalance(vaultPda);
+    await printVaultBalance();
     await printMetadata(userWallet2);
   });
   it("User #2 sell some emojis", async () => {
@@ -194,7 +178,7 @@ describe("emoji-exchange", async () => {
     );
     await printStoreBalances();
     await printUserBalances(userWallet2);
-    await printVaultBalance(vaultPda);
+    await printVaultBalance();
     await printMetadata(userWallet2);
   });
 
@@ -210,9 +194,9 @@ describe("emoji-exchange", async () => {
     return new anchor.Wallet(keypair);
   }
 
-  async function printVaultBalance(vaultPubkey: anchor.web3.PublicKey) {
+  async function printVaultBalance() {
     console.log("-------------------------------------------------------------------------------");
-    const balance = await connection.getBalance(vaultPubkey);
+    const balance = await service.getVaultBalance(storeWallet);
     console.log(`Vault: ${balance / anchor.web3.LAMPORTS_PER_SOL} SOL`);
   }
 

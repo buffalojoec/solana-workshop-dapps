@@ -25,6 +25,58 @@ export function getAnchorConfigs(wallet: AnchorWallet): [anchor.AnchorProvider, 
 }
 
 
+export async function initializeVault(
+    storeWallet: AnchorWallet
+): Promise<[anchor.web3.Transaction, anchor.AnchorProvider]> {
+    const [provider, program] = getAnchorConfigs(storeWallet);
+    const vaultPda = (await anchor.web3.PublicKey.findProgramAddress(
+      [ Buffer.from(constants.VAULT_SEED) ],
+      program.programId
+    ))[0];
+    const ix = await program.methods.createVault()
+        .accounts({
+            vault: vaultPda,
+            storeWallet: storeWallet.publicKey,
+            systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .instruction();
+    let tx = new anchor.web3.Transaction().add(ix);
+    return [tx, provider];
+}
+
+export async function fundVault(
+    storeWallet: AnchorWallet, 
+    amount: number
+): Promise<[anchor.web3.Transaction, anchor.AnchorProvider]> {
+    const [provider, program] = getAnchorConfigs(storeWallet);
+    const [vaultPda, vaultPdaBump] = await anchor.web3.PublicKey.findProgramAddress(
+      [ Buffer.from(constants.VAULT_SEED) ],
+      program.programId
+    );
+    const ix = await program.methods.fundVault(
+        vaultPdaBump, new anchor.BN(amount)
+    )
+        .accounts({
+            vault: vaultPda,
+            storeWallet: storeWallet.publicKey,
+            systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .instruction();
+    let tx = new anchor.web3.Transaction().add(ix);
+    return [tx, provider];
+}
+
+export async function getVaultBalance(storeWallet: AnchorWallet): Promise<number> {
+    const [provider, program] = getAnchorConfigs(storeWallet);
+    const vaultPda = (await anchor.web3.PublicKey.findProgramAddress(
+      [ Buffer.from(constants.VAULT_SEED) ],
+      program.programId
+    ))[0];
+    const balance = await provider.connection.getBalance(vaultPda);
+    return balance;
+}
+
+
 export async function createStoreEmojiTransaction(
     storeWallet: AnchorWallet,
     emojiSeed: string,
@@ -270,6 +322,37 @@ export async function loadUserStore(wallet: AnchorWallet): Promise<UserEmojiObje
         }
     };
     return userStore;
+}
+
+export async function cashOutUser(
+    wallet: AnchorWallet,
+    recipientPubkey: anchor.web3.PublicKey
+): Promise<[anchor.web3.Transaction, anchor.AnchorProvider]> {
+    const [provider, program] = getAnchorConfigs(wallet);
+    if (!provider) throw("Provider is null");
+    const walletBalance = await provider.connection.getBalance(wallet.publicKey);
+    const txFee = 0 // Calculate the tx fee to send
+    const cashOutAmount = walletBalance - txFee;
+    const [userMetadataPda, userMetadataPdaBump] = await anchor.web3.PublicKey.findProgramAddress(
+        [
+            provider.wallet.publicKey.toBuffer(),
+            Buffer.from(constants.METADATA_SEED),
+        ],
+        program.programId
+    );
+    const ix = await program.methods.cashOutUser(
+        userMetadataPdaBump,
+        cashOutAmount, 
+    )
+        .accounts({
+            userMetadata: userMetadataPda,
+            recipient: recipientPubkey,
+            userWallet: wallet.publicKey,
+            systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .instruction();
+    let tx = new anchor.web3.Transaction().add(ix);
+    return [tx, provider];
 }
 
 export async function placeOrder(

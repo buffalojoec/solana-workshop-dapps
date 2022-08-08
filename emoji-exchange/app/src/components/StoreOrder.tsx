@@ -41,18 +41,18 @@ export const StoreOrder: FC<StoreOrderProps> = (props: StoreOrderProps) => {
 
       <span className="text-l ml-4 mr-2">{props.balance}</span>
 
-      <span className="text-l ml-4 mr-2">{`${props.price / LAMPORTS_PER_SOL} SOL`}</span>
+      <span className="text-l ml-4 mr-2">{`${(props.price / LAMPORTS_PER_SOL).toFixed(4)} SOL`}</span>
 
       <input 
         type="number" 
-        className="input input-bordered max-w-xs m-2" 
+        className="input input-bordered w-20 m-2" 
         placeholder="Quantity"
         value={quantity}
         onChange={(e) => setQuantity(+e.target.value as number)}
       />
       
       <button
-        className="px-8 m-2 btn animate-pulse bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:from-pink-500 hover:to-yellow-500 ..."
+        className="px-8 m-2 w-20 btn animate-pulse bg-[#00d466] hover:from-pink-500 hover:to-yellow-500"
         onClick={() => onClickOrder()}>
           <span>Buy</span>
       </button>

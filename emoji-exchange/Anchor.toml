@@ -1,7 +1,7 @@
 [features]
 seeds = false
 [programs.devnet]
-emoji_exchange = "7chu7NvG5P8fAKYv6tGUnGEPb6WV28kGK9xiWExfwNSG"
+emoji_exchange = "CrMdx78x6xJCpCkBkQ5Fdqyd99HBynYGK5t9AezgNbCN"
 
 [registry]
 url = "https://anchor.projectserum.com"

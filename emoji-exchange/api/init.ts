@@ -12,24 +12,28 @@ function createKeypairFromFile(path: string): anchor.web3.Keypair {
     )
 };
 
-async function main() {
-    
+export async function initializeStore() {
+    console.log("Initializing vault...");
+    try {
+        var [tx, provider] = await util.initializeVault(STORE_WALLET);
+        await provider.connection.sendTransaction(tx, [STORE_WALLET.payer]);
+        var [tx, provider] = await util.fundVault(STORE_WALLET, constants.INIT_FUND_AMOUNT);
+        await provider.connection.sendTransaction(tx, [STORE_WALLET.payer]);
+    } catch (e) {
+        console.log("Vault already initialized.");
+    };
+    console.log("Vault initialized successfully.");
+
+    console.log("Initializing store...");
     for (var emoji of constants.EMOJIS_LIST) {
         var [tx, provider] = await util.createStoreEmojiTransaction(STORE_WALLET, emoji.seed, emoji.display);
         try {
             await provider.connection.sendTransaction(tx, [STORE_WALLET.payer]);
-        } catch (_) {
-            console.log(`Store Emoji account exists for: ${emoji}`);
+        } catch (e) {
+            console.log(e);
+            console.log(`Store Emoji account exists for: ${emoji.seed}`);
+            console.log(`Pubkey: ${tx.instructions[0].keys[0].pubkey.toString()}`);
         }
     }
     console.log("Store initialized.");
 }
-
-
-main().then(
-    () => process.exit(),
-    err => {
-        console.error(err);
-        process.exit(-1);
-    },
-);

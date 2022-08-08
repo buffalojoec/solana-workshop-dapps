@@ -5,7 +5,7 @@ pub mod instructions;
 use instructions::*;
 
 
-declare_id!("7chu7NvG5P8fAKYv6tGUnGEPb6WV28kGK9xiWExfwNSG");
+declare_id!("CrMdx78x6xJCpCkBkQ5Fdqyd99HBynYGK5t9AezgNbCN");
 
 
 #[program]
